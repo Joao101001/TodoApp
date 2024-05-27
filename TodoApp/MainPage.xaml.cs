@@ -2,35 +2,53 @@
 using TodoApp.Models;
 using TodoApp.Services;
 using System;
+using TodoApp.Views;
 
-namespace TodoApp.Views
+namespace TodoApp
 {
     public partial class MainPage : ContentPage
     {
-        private TodoItemDatabase database;
+        private readonly TaskDatabase _database;
 
-        public MainPage()
+        public MainPage(TaskDatabase database = null)
         {
             InitializeComponent();
-            database = new TodoItemDatabase(DependencyService.Get<IFileHelper>().GetLocalFilePath("TodoSQLite.db3"));
-            LoadData();
+            _database = database ?? App.Database; // Usar la base de datos proporcionada o la predeterminada de la aplicación
         }
 
-        private async void LoadData()
+        protected override async void OnAppearing()
         {
-            TodoListView.ItemsSource = await database.GetItemsAsync();
+            base.OnAppearing();
+            TasksListView.ItemsSource = await _database.GetTasksAsync();
         }
 
-        private async void OnAddItemClicked(object sender, EventArgs e)
+        private async void OnAddTaskClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new TodoItemPage(new TodoItem()));
+            await Navigation.PushAsync(new TaskPage(_database));
         }
 
-        private async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private async void OnTaskTapped(object sender, ItemTappedEventArgs e)
         {
-            if (e.SelectedItem != null)
+            if (e.Item != null)
             {
-                await Navigation.PushAsync(new TodoItemPage((TodoItem)e.SelectedItem));
+                var task = e.Item as TaskItem;
+                await Navigation.PushAsync(new TaskPage(_database, task));
+            }
+        }
+
+        private async void OnDeleteTaskClicked(object sender, EventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var task = menuItem.CommandParameter as TaskItem;
+
+            if (task != null)
+            {
+                var result = await DisplayAlert("Confirmar", $"¿Está seguro que desea eliminar la tarea '{task.Name}'?", "Sí", "No");
+                if (result)
+                {
+                    await _database.DeleteTaskAsync(task);
+                    TasksListView.ItemsSource = await _database.GetTasksAsync();
+                }
             }
         }
     }

@@ -1,19 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+﻿<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:TodoApp"
-             x:Class="TodoApp.Views.MainPage">
+             x:Class="TodoApp.MainPage">
 
-    <StackLayout>
-        <ListView x:Name="TodoListView"
-                  ItemSelected="OnItemSelected">
+    <StackLayout Padding="10">
+        <Label Text="Lista de Tareas" 
+               FontSize="Large" 
+               HorizontalOptions="Center" />
+        <ListView x:Name="TasksListView" 
+                  ItemTapped="OnTaskTapped">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding Name}" Detail="{Binding Description}" />
+                    <TextCell Text="{Binding Name}" 
+                              Detail="{Binding Description}">
+                        <TextCell.ContextActions>
+                            <MenuItem Text="Delete" 
+                                      Clicked="OnDeleteTaskClicked" 
+                                      CommandParameter="{Binding .}" 
+                                      IsDestructive="True"/>
+                        </TextCell.ContextActions>
+                    </TextCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-
-        <Button Text="Add Task" Clicked="OnAddItemClicked"/>
+        
+        <Button Text="Agregar Tarea" 
+                Clicked="OnAddTaskClicked"/>
     </StackLayout>
+
 </ContentPage>

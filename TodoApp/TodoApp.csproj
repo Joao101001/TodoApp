@@ -21,13 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\TodoItem.xaml.cs">
-      <DependentUpon>TodoItem.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Views\TodoItem.xaml">
+    <EmbeddedResource Update="Views\TaskPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
